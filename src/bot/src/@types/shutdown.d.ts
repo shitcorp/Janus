@@ -1,0 +1,3 @@
+interface Done {
+  (): void;
+}

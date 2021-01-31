@@ -1,0 +1,29 @@
+{
+  "name": "janus-root",
+  "repository": "https://github.com/Huskydog9988/Janus-Bot-Rework",
+  "author": "Huskydog9988",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "doc": "typedoc",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "yarn lint --fix --quiet",
+    "bot": "yarn workspace @janus/bot"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
+    "@typescript-eslint/parser": "^4.14.1",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1",
+    "typedoc": "^0.20.19"
+  },
+  "engines": {
+    "node": ">=14.x.x",
+    "npm": ">=7.x.x"
+  },
+  "workspaces": [
+    "src/*"
+  ]
+}
