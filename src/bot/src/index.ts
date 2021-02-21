@@ -1,15 +1,28 @@
 import { isMaster } from 'cluster';
 import { Fleet } from 'eris-fleet';
 import { join } from 'path';
-import { inspect } from 'util';
 import * as Sentry from '@sentry/node';
-// import * as Tracing from '@sentry/tracing';
 import { platform, version, release } from 'os';
-
+import Redis from 'ioredis';
+import PromClient from 'prom-client';
+import {
+  handleError,
+  handleWarning,
+  logger,
+} from './utils';
 import { config } from 'dotenv';
-config();
+import http from 'http';
+// import * as Tracing from '@sentry/tracing';
+// import { Queue, QueueScheduler } from 'bullmq';
 
-import { logger } from './utils';
+// @ts-ignore
+// const cacheQueueScheduler = new QueueScheduler(
+//   'Clean Caches',
+// );
+// const cacheQueue = new Queue('Clean Caches');
+
+// load dot env config
+config();
 
 // check if node version is below 14
 if (Number(process.version.slice(1).split('.')[0]) < 14) {
@@ -21,6 +34,9 @@ if (Number(process.version.slice(1).split('.')[0]) < 14) {
 
 // define sentry DSN
 const DSN: string | null = process.env.SENTRY_URL;
+// define redis connection
+const redis = new Redis();
+const register = new PromClient.AggregatorRegistry();
 
 // if not production
 // if (process.env.NODE_ENV !== 'production') {
@@ -61,10 +77,10 @@ Sentry.init({
         return 0.2;
       case 'loadModule':
         return 0.3;
-      case 'startManager':
-        return 0.5;
+      case 'cacheStats':
+        return 0.4;
       case 'command':
-        return 0.05;
+        return 0.1;
       case 'reloadCMD':
         return 0.8;
       case 'shutdown':
@@ -84,6 +100,26 @@ Sentry.setTag('node', process.version);
 const Admiral = new Fleet({
   path: join(__dirname, './bot.js'),
   token: process.env.DISCORD_TOKEN,
+  lessLogging: process.env.NODE_ENV === 'production',
+  serviceTimeout: 6000,
+  clientOptions: {
+    allowedMentions: {
+      everyone: false,
+    },
+  },
+  startingStatus: {
+    status: 'online',
+    game: {
+      name: '*help | ',
+      type: 0,
+    },
+  },
+  // services: [
+  //   {
+  //     name: 'HandleMessage',
+  //     path: join(__dirname, './services/HandleMessage.js'),
+  //   },
+  // ],
 });
 
 // Code to only run on master process
@@ -94,15 +130,78 @@ if (isMaster) {
   // Admiral.on('debug', (m) => logger.debug(m));
   // warnings
   Admiral.on('warn', (m) => {
-    logger.warn(m);
+    handleWarning(m);
   });
   // errors
   Admiral.on('error', (m) => {
-    logger.error(inspect(m));
+    handleError(m);
   });
 
   // Logs stats when they arrive
-  // Admiral.on('stats', (m) => logger.info(inspect(m)));
+  Admiral.on('stats', async (m) => {
+    const pipeline = redis.pipeline();
+
+    // set values
+    pipeline
+      .set('guilds', m.guilds)
+      .set('users', m.users)
+      .set('clustersRam', m.clustersRam)
+      .set('servicesRam', m.servicesRam)
+      .set('masterRam', m.masterRam)
+      .set('totalRam', m.totalRam)
+      .set('voice', m.voice)
+      .set('largeGuilds', m.largeGuilds)
+      .set('shardCount', m.shardCount)
+      .set('clusters', m.clusters)
+      .set('services', m.services);
+
+    // execute pipeline
+    pipeline.exec().catch((err) => {
+      handleError(err);
+    });
+
+    // logger.info(`stats ${inspect(m)}`);
+  });
+
+  // (async () => {
+  //   // Repeat job once every day at 3:15 (am)
+  //   await cacheQueue.add('clean', undefined, {
+  //     repeat: {
+  //       cron: '15 3 * * *',
+  //     },
+  //   });
+  // })();
+
+  http
+    .createServer(async (req, res) => {
+      //handle every single request with this callback
+
+      try {
+        const metrics = await register.clusterMetrics();
+
+        // send content type
+        res.writeHead(200, {
+          'Content-Type': register.contentType,
+        });
+        // send metrics
+        res.write(metrics);
+      } catch (error) {
+        handleError(error);
+
+        // set internal error status code
+        res.statusCode = 500;
+        // send error message
+        res.write(error.message);
+      } finally {
+        // end the response
+        res.end();
+      }
+    })
+    .listen(process.env.PORT, () =>
+      logger.info(
+        `Prometheus running at http://localhost:${process.env.PORT}`,
+      ),
+    );
 }
 
 // Capture unhandledRejections
@@ -111,10 +210,7 @@ process.on('unhandledRejection', (error: Error) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   if (error.code !== 50013) {
-    // Log
-    logger.error(`Unhandled Rejection: ${inspect(error)}`);
-    // Send to sentry
-    Sentry.captureException(error);
+    handleError(error, 'Unhandled Rejection');
   }
   // logger.error(error);
 });
@@ -123,21 +219,20 @@ process.on('unhandledRejection', (error: Error) => {
 process.on(
   'uncaughtExceptionMonitor',
   (error: Error, origin: string) => {
-    // Log
-    logger.error(
-      `Uncaught Exception Monitor: ${inspect(
-        error,
-      )}\n${origin}`,
-    );
-    // Send to sentry
-    Sentry.captureException(error);
+    handleError(error, 'Uncaught Exception Monitor');
+
+    // // Log
+    // logger.error(
+    //   `Uncaught Exception Monitor: ${inspect(
+    //     error,
+    //   )}\n${origin}`,
+    // );
+    // // Send to sentry
+    // Sentry.captureException(error);
   },
 );
 
 // Capture warnings
 process.on('warning', (warning: Error) => {
-  // Log
-  logger.warn(`Warning: ${inspect(warning)}`);
-  // Send to sentry
-  Sentry.captureException(warning);
+  handleWarning(warning);
 });

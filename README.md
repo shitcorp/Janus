@@ -1,16 +1,20 @@
-[spectacles.js](https://github.com/spec-tacles/spectacles.js)
+# Janus
 
-[js prom client](https://www.npmjs.com/package/prom-client)
+A fully featured and high performance bot for Star Citizen with access to a plethora of information. Its primary sources of information are the [starcitizen.tools](https://starcitizen.tools/) wiki and the [starcitizen api](https://starcitizen-api.com/).
 
-[bull board](https://github.com/vcapretz/bull-board)
-
-Example eris fleet bot [here](https://github.com/Tom-Beijner/Watchdog/blob/master/src/structures/Watchdog.ts)
-
-## Envs
+## Required Environment Variables
 
 - DISCORD_TOKEN
   - bot
 - SENTRY_URL
+  - bot
+  - bull-worker
+- SC_API_KEY
+  - bot
+  - bull-worker
+- PREFIX
+  - bot
+- PORT
   - bot
 
 ## Required services

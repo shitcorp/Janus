@@ -1,0 +1,4 @@
+{
+  "entryPoints": ["src/bot/src/bot.ts", "src/bot/src/index.ts", "src/bot/src/structures/index.ts", "src/bot/src/utils/index.ts"],
+  "out": "docs"
+}

@@ -35,7 +35,7 @@ export class Embed {
    */
   public addField(
     name: string,
-    value: string,
+    value: string | number | boolean,
     inline = false,
   ): this {
     if (!this.embed.fields) {
@@ -44,6 +44,12 @@ export class Embed {
 
     // if 25 or more embeds, don't add more
     if (this.embed.fields.length >= 25) return this;
+
+    // if value is a number, make it a string
+    if (typeof value === 'number') value = value.toString();
+    // if value is a boolean, make it a string
+    else if (typeof value === 'boolean')
+      value = value.toString();
 
     const field: EmbedField = {
       name,
@@ -146,12 +152,29 @@ export class Embed {
   }
 
   /**
-   * Sets the URL of this embed;
+   * Sets the URL of this embed.
    * @param url
    */
-  public setURl(url: string): this {
+  public setURL(url: string): this {
     this.embed.url = url;
 
+    return this;
+  }
+
+  /**
+   * Sets the timestamp of this embed.
+   * @param timestamp
+   */
+  public setTimestamp(
+    timestamp: Date | number = Date.now(),
+  ) {
+    // if date object, get time in ms
+    if (timestamp instanceof Date)
+      timestamp = timestamp.getTime();
+
+    this.embed.timestamp = new Date(
+      timestamp,
+    ).toISOString();
     return this;
   }
 

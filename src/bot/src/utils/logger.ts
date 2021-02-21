@@ -25,6 +25,20 @@ export const logger = winston.createLogger({
     (log) =>
       `[${log.level.toUpperCase()}] - ${log.message}`,
   ),
+
+  // format: winston.format.combine(
+  //   winston.format.colorize(),
+  //   winston.format.timestamp(),
+  //   winston.format.align(),
+  //   winston.format.printf(
+  //     (log) =>
+  //       `[${log.level.toUpperCase()}] - ${log.message}`,
+  //   ),
+  // ),
+  // format: winston.format.combine(
+  //   winston.format.timestamp(),
+  //   winston.format.prettyPrint(),
+  // ),
 });
 
 if (process.env.NODE_ENV !== 'production') {
