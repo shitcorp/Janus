@@ -2,7 +2,7 @@ import { Message } from 'eris';
 import { Command, Embed } from '../../structures/';
 import { CommandObjects } from '../../@types/command';
 import Redis from 'ioredis';
-import { handleError, logger } from '../../utils';
+import { handleError } from '../../utils';
 
 export default class gameinfo extends Command {
   readonly redis = new Redis();
@@ -34,11 +34,11 @@ export default class gameinfo extends Command {
       .then(async (responses) => {
         //  need to add proper error handling in future
 
-        logger.debug(responses[0][1]);
-        logger.debug(responses[1][1]);
-        logger.debug(responses[2][1]);
-        logger.debug(responses[3][1]);
-        logger.debug(responses[4][1]);
+        // logger.debug(responses[0][1]);
+        // logger.debug(responses[1][1]);
+        // logger.debug(responses[2][1]);
+        // logger.debug(responses[3][1]);
+        // logger.debug(responses[4][1]);
 
         statsEmbed
           .addField(
