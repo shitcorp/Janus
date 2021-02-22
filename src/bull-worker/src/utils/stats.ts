@@ -29,7 +29,7 @@ Body:
 /**
  * Caches game stats.
  */
-export const cacheGameStats = async () => {
+export const cacheGameStats = async (): Promise<boolean> => {
   // start trans
   const request = Sentry.startTransaction({
     name: 'Cache Game Stats',
@@ -37,6 +37,7 @@ export const cacheGameStats = async () => {
   });
 
   let data: StatsResponse;
+  let failed = false;
 
   try {
     const response = await axios({
@@ -76,9 +77,14 @@ export const cacheGameStats = async () => {
       .set('fans', '')
       .set('fleet', '')
       .set('funds', '');
+
+    failed = true;
   }
 
   pipeline.exec().catch((err) => {
     handleError(err);
+    failed = true;
   });
+
+  return failed;
 };

@@ -8,7 +8,6 @@ import { inspect } from 'util';
 import Collection from '@discordjs/collection';
 
 import {
-  cacheStats,
   handleError,
   hasSecurityClearance,
   logger,
@@ -57,8 +56,6 @@ export default class JanusWorker
         NODE_APP_INSTANCE: process.env.NODE_APP_INSTANCE,
       },
     });
-
-    await cacheStats();
 
     this.bot.on('messageCreate', (message) =>
       this.handleMessage(message),

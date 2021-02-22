@@ -3,7 +3,12 @@ import * as Sentry from '@sentry/node';
 import { platform, release, version } from 'os';
 import { config } from 'dotenv';
 
-import { cacheGameStats, logger } from './utils';
+import {
+  cacheGameStats,
+  logger,
+  handleError,
+  handleWarning,
+} from './utils';
 
 // check if node version is below 14
 if (Number(process.version.slice(1).split('.')[0]) < 14) {
@@ -72,8 +77,58 @@ Sentry.setTag('os', version() + ' ' + release());
 Sentry.setTag('node', process.version);
 
 // @ts-ignore
-const worker = new Worker('Cache', async (job) => {
-  if (job.name === 'gamestats') {
-    await cacheGameStats();
+const cacheWorker = new Worker('Cache', async (job) => {
+  if (job.name === 'Game Stats') {
+    const result = await cacheGameStats();
+
+    if (!result) new Error('Failed to cache game stats');
   }
+});
+
+logger.info('Ready');
+
+// Capture unhandledRejections
+process.on('unhandledRejection', (error: Error) => {
+  // If not a permission denied discord api error
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (error.code !== 50013) {
+    handleError(error, 'Unhandled Rejection');
+  }
+  // logger.error(error);
+});
+
+// Capture uncaughtExceptionMonitors
+process.on(
+  'uncaughtExceptionMonitor',
+  (error: Error, origin: string) => {
+    handleError(error, 'Uncaught Exception Monitor');
+
+    // // Log
+    // logger.error(
+    //   `Uncaught Exception Monitor: ${inspect(
+    //     error,
+    //   )}\n${origin}`,
+    // );
+    // // Send to sentry
+    // Sentry.captureException(error);
+  },
+);
+
+// Capture warnings
+process.on('warning', (warning: Error) => {
+  handleWarning(warning);
+});
+
+// Close event sent
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM signal received.');
+  // close workers
+  await cacheWorker.close();
+
+  // close Sentry connection
+  await Sentry.close(4000);
+
+  // exit
+  process.exit(0);
 });

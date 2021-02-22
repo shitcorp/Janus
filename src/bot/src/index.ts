@@ -13,16 +13,11 @@ import {
 import { config } from 'dotenv';
 import http from 'http';
 // import * as Tracing from '@sentry/tracing';
-// import { Queue, QueueScheduler } from 'bullmq';
+import { Queue, QueueScheduler } from 'bullmq';
 
 // @ts-ignore
-// const cacheQueueScheduler = new QueueScheduler(
-//   'Clean Caches',
-// );
-// const cacheQueue = new Queue('Clean Caches');
-
-// load dot env config
-config();
+const cacheQueueScheduler = new QueueScheduler('Cache');
+const cacheQueue = new Queue('Cache');
 
 // check if node version is below 14
 if (Number(process.version.slice(1).split('.')[0]) < 14) {
@@ -39,14 +34,17 @@ const redis = new Redis();
 const register = new PromClient.AggregatorRegistry();
 
 // if not production
-// if (process.env.NODE_ENV !== 'production') {
-// (async () => {
-//   // set DSN to null
-//   // DSN = null;
-//   // get env vars from .env file
-//   (await import('dotenv')).config();
-// })();
-// }
+if (process.env.NODE_ENV !== 'production') {
+  (async () => {
+    // set DSN to null
+    // DSN = null;
+    // get env vars from .env file
+    // (await import('dotenv')).config();
+  })();
+
+  // load dot env config
+  config();
+}
 
 // start sentry
 Sentry.init({
@@ -163,14 +161,29 @@ if (isMaster) {
     // logger.info(`stats ${inspect(m)}`);
   });
 
-  // (async () => {
-  //   // Repeat job once every day at 3:15 (am)
-  //   await cacheQueue.add('clean', undefined, {
-  //     repeat: {
-  //       cron: '15 3 * * *',
-  //     },
-  //   });
-  // })();
+  // Register cache jobs
+  (async () => {
+    // Cache stats now
+    await cacheQueue.add('Game Stats', undefined, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 1000,
+      },
+    });
+
+    // Repeat job once every day at 3:15 (am)
+    await cacheQueue.add('Game Stats', undefined, {
+      repeat: {
+        cron: '15 3 * * *',
+      },
+      attempts: 6,
+      backoff: {
+        type: 'exponential',
+        delay: 10000,
+      },
+    });
+  })();
 
   http
     .createServer(async (req, res) => {
@@ -235,4 +248,16 @@ process.on(
 // Capture warnings
 process.on('warning', (warning: Error) => {
   handleWarning(warning);
+});
+
+// Close event sent
+process.on('SIGTERM', async () => {
+  logger.info('SIGTERM signal received.');
+  // close queue scheduler
+  await cacheQueueScheduler.close();
+  // close Sentry connection
+  await Sentry.close(4000);
+
+  // exit
+  process.exit(0);
 });
