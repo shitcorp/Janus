@@ -103,7 +103,10 @@ const Admiral = new Fleet({
   clientOptions: {
     allowedMentions: {
       everyone: false,
+      roles: false,
+      users: false,
     },
+    intents: ['guilds', 'guildMessages', 'directMessages'],
   },
   startingStatus: {
     status: 'online',
