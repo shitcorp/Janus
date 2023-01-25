@@ -14,8 +14,6 @@ import (
 )
 
 func main() {
-	LoadConfig(".")
-
 	var (
 		webhookAddr   = viper.GetString("WEBHOOK_ADDR")
 		webhookPubkey = viper.GetString("WEBHOOK_PUBKEY")
