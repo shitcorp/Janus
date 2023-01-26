@@ -1,57 +1,58 @@
 package main
 
 import (
-	"context"
-	"github.com/spf13/viper"
-	"log"
-	"net/http"
-
-	"github.com/diamondburned/arikawa/v3/api/webhook"
-	"github.com/diamondburned/arikawa/v3/gateway"
-	"github.com/diamondburned/arikawa/v3/state"
-
+	"github.com/bwmarrin/discordgo"
 	"github.com/shitcorp/janus/cmds"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"github.com/zekrotja/ken"
+	"github.com/zekrotja/ken/middlewares/cmdhelp"
+	"github.com/zekrotja/ken/store"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
-	var (
-		webhookAddr   = viper.GetString("WEBHOOK_ADDR")
-		webhookPubkey = viper.GetString("WEBHOOK_PUBKEY")
-	)
+	log.Info("Starting Janus")
 
-	if webhookAddr != "" {
-		s := state.NewAPIOnlyState(viper.GetString("TOKEN"), nil)
-
-		h := cmds.NewHandler(s)
-
-		if err := cmds.OverwriteCommands(s); err != nil {
-			log.Fatalln("cannot update commands:", err)
-		}
-
-		srv, err := webhook.NewInteractionServer(webhookPubkey, h)
-		if err != nil {
-			log.Fatalln("cannot create interaction server:", err)
-		}
-
-		log.Println("listening and serving at", webhookAddr+"/")
-		log.Fatalln(http.ListenAndServe(webhookAddr, srv))
-	} else {
-		s := state.New("Bot " + viper.GetString("TOKEN"))
-		s.AddIntents(gateway.IntentGuilds)
-		s.AddHandler(func(*gateway.ReadyEvent) {
-			me, _ := s.Me()
-			log.Println("connected to the gateway as", me.Tag())
-		})
-
-		h := cmds.NewHandler(s)
-		s.AddInteractionHandler(h)
-
-		if err := cmds.OverwriteCommands(s); err != nil {
-			log.Fatalln("cannot update commands:", err)
-		}
-
-		if err := h.State.Connect(context.Background()); err != nil {
-			log.Fatalln("cannot connect:", err)
-		}
+	session, err := discordgo.New("Bot " + viper.GetString("TOKEN"))
+	if err != nil {
+		panic(err)
 	}
+	defer session.Close()
+
+	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
+		log.Infof("Janus is connected as %s", r.User.Username)
+	})
+
+	// setup katana
+	k, err := ken.New(session, ken.Options{
+		CommandStore: store.NewDefault(),
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer k.Unregister()
+
+	// register cmds
+	err = k.RegisterCommands(new(cmds.PingCommand))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = k.RegisterMiddlewares(cmdhelp.New())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// login
+	err = session.Open()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	// handle stop
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -13,8 +14,8 @@ type Config struct {
 	WebhookAddress string `mapstructure:"WEBHOOK_ADDR"`
 	WebhookPubkey  string `mapstructure:"WEBHOOK_PUBKEY"`
 
-    // when appenv != production
-    TestGuildId string `mapstructure:"TEST_GUILD_ID"`
+	// when appenv != production
+	TestGuildId string `mapstructure:"TEST_GUILD_ID"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
@@ -31,4 +32,6 @@ func LoadConfig(path string) {
 	if err != nil {
 		return
 	}
+
+	log.Info("Loaded the config")
 }
