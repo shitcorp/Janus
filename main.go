@@ -13,6 +13,20 @@ import (
 	"syscall"
 )
 
+func init() {
+	LoadConfig(".")
+
+	//	// Log as JSON instead of the default ASCII formatter.
+	//	log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	//	// Only log the warning severity or above.
+	//	log.SetLevel(log.WarnLevel)
+}
+
 func main() {
 	log.Info("Starting Janus")
 
@@ -23,10 +37,10 @@ func main() {
 	defer session.Close()
 
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		log.Infof("Janus is connected as %s", r.User.Username)
+		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 	})
 
-	// setup katana
+	// setup ken
 	k, err := ken.New(session, ken.Options{
 		CommandStore: store.NewDefault(),
 	})
