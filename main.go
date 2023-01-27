@@ -42,6 +42,16 @@ func main() {
 
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
+
+		// deletes all cmds
+		//cmds, err := session.ApplicationCommands(r.Application.ID, "492075852071174144")
+		//if err != nil {
+		//	log.Fatalln(err)
+		//}
+		//for i := range cmds {
+		//	//log.Infof("Command: %s", cmds[i].ID)
+		//	session.ApplicationCommandDelete(r.Application.ID, "492075852071174144", cmds[i].ID)
+		//}
 	})
 
 	// setup ken
