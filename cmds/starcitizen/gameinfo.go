@@ -3,8 +3,13 @@ package starcitizenCmds
 import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"github.com/go-redis/cache/v8"
+	scapiWebsite "github.com/shitcorp/janus/scapi/website"
 	"github.com/shitcorp/janus/utils"
 	"github.com/zekrotja/ken"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"time"
 )
 
 //func (h *Handler) cmdStats(ctx context.Context, data cmdroute.CommandData) *api.InteractionResponseData {
@@ -58,12 +63,22 @@ func (c *GameInfoCommand) Guild() string {
 func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()
 
-	_, stats, _ := utils.Api.Website.Stats()
+	stats := new(scapiWebsite.StatsData)
+	err = utils.Cache.Once(&cache.Item{
+		Key:   "gameinfo",
+		Value: stats, // destination
+		TTL:   time.Hour * 24,
+		Do: func(*cache.Item) (interface{}, error) {
+			_, res, err := utils.Api.Website.Stats()
+			return res.Data, err
+		},
+	})
+	if err != nil {
+		_ = ctx.Respond(utils.GeneralErrorResponse)
+		return
+	}
 
-	//log.WithFields(log.Fields{
-	//  "stats": stats,
-	//  "req":   req,
-	//}).Info("Stats response")
+	p := message.NewPrinter(language.English)
 
 	err = ctx.Respond(&discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
@@ -75,38 +90,38 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 					Fields: []*discordgo.MessageEmbedField{
 						{
 							Name:   "Live",
-							Value:  stats.Data.CurrentLive,
+							Value:  stats.CurrentLive,
 							Inline: true,
 						},
 						{
 							Name:   "PTU",
-							Value:  stats.Data.CurrentPtu,
+							Value:  stats.CurrentPtu,
 							Inline: true,
 						},
 						{
 							Name:   "Evocati",
-							Value:  stats.Data.CurrentEtf,
+							Value:  stats.CurrentEtf,
 							Inline: true,
 						},
 						{
 							Name:   "Citizens",
-							Value:  fmt.Sprintf("%d", stats.Data.Fans),
+							Value:  p.Sprintf("%d", stats.Fans),
 							Inline: true,
 						},
 						{
 							Name:   "Fleet",
-							Value:  fmt.Sprintf("%d", stats.Data.Fleet),
+							Value:  p.Sprintf("%d", stats.Fleet),
 							Inline: true,
 						},
 						{
 							Name:   "Funds",
-							Value:  fmt.Sprintf("%d", stats.Data.Funds),
+							Value:  p.Sprintf("%.2f", stats.Funds),
 							Inline: true,
 						},
 					},
 				},
 			},
-			Content: fmt.Sprintf("current live: %s", stats.Data.CurrentLive),
+			Content: fmt.Sprintf("current live: %s", stats.CurrentLive),
 		},
 	})
 	return

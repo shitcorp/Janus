@@ -16,7 +16,7 @@ type StatsData struct {
 	CurrentPtu  string `json:"current_ptu"`
 	Fans        uint32
 	Fleet       uint32
-	Funds       int64
+	Funds       float64
 }
 
 func (w *Website) Stats() (*http.Response, *StatsResponse, error) {
