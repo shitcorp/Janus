@@ -29,7 +29,13 @@ func (c *PingCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *PingCommand) Options() []*discordgo.ApplicationCommandOption {
-	return []*discordgo.ApplicationCommandOption{}
+	return []*discordgo.ApplicationCommandOption{
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "help",
+			Description: "Show help",
+		},
+	}
 }
 
 func (c *PingCommand) IsDmCapable() bool {

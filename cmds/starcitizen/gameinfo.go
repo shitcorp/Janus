@@ -38,7 +38,13 @@ func (c *GameInfoCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *GameInfoCommand) Options() []*discordgo.ApplicationCommandOption {
-	return []*discordgo.ApplicationCommandOption{}
+	return []*discordgo.ApplicationCommandOption{
+		{
+			Type:        discordgo.ApplicationCommandOptionSubCommand,
+			Name:        "help",
+			Description: "Show help",
+		},
+	}
 }
 
 func (c *GameInfoCommand) IsDmCapable() bool {
