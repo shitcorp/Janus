@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/shitcorp/janus/cmds"
+	"github.com/shitcorp/janus/utils"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 	"github.com/zekrotja/ken/store"
@@ -14,8 +14,6 @@ import (
 )
 
 func init() {
-	LoadConfig(".")
-
 	//	// Log as JSON instead of the default ASCII formatter.
 	//	log.SetFormatter(&log.JSONFormatter{})
 
@@ -30,7 +28,7 @@ func init() {
 func main() {
 	log.Info("Starting Janus")
 
-	session, err := discordgo.New("Bot " + viper.GetString("TOKEN"))
+	session, err := discordgo.New("Bot " + utils.Config.Token)
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +48,7 @@ func main() {
 	defer k.Unregister()
 
 	// register cmds
-	err = k.RegisterCommands(new(cmds.PingCommand))
+	err = k.RegisterCommands(cmds.Commands...)
 	if err != nil {
 		log.Fatalln(err)
 	}

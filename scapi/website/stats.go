@@ -11,15 +11,17 @@ type StatsResponse struct {
 }
 
 type StatsData struct {
+	CurrentEtf  string `json:"current_etf"`
 	CurrentLive string `json:"current_live"`
+	CurrentPtu  string `json:"current_ptu"`
 	Fans        uint32
 	Fleet       uint32
-	Funds       uint64
+	Funds       int64
 }
 
 func (w *Website) Stats() (*http.Response, *StatsResponse, error) {
 	stats := new(StatsResponse)
-	res, err := w.sling.Path("auto").Get("stats").ReceiveSuccess(stats)
+	res, err := w.sling.Path("auto/").Get("stats").ReceiveSuccess(stats)
 
 	return res, stats, err
 }
