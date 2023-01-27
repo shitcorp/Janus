@@ -2,7 +2,10 @@ version: '3'
 
 services:
   redis:
-    image: 'redis:latest'
+    image: 'redis/redis-stack:latest'
     ports:
+      # redis
       - '6379:6379'
+      # insight
+      - '8001:8001'
     restart: 'unless-stopped'
