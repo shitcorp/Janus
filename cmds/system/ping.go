@@ -1,4 +1,4 @@
-package cmds
+package systemcmds
 
 import (
 	"github.com/bwmarrin/discordgo"
@@ -30,36 +30,21 @@ func (c *PingCommand) Type() discordgo.ApplicationCommandType {
 
 func (c *PingCommand) Options() []*discordgo.ApplicationCommandOption {
 	return []*discordgo.ApplicationCommandOption{}
-	//return []*discordgo.ApplicationCommandOption{
-	//  {
-	//    Type:        discordgo.ApplicationCommandOptionBoolean,
-	//    Name:        "pog",
-	//    Required:    true,s
-	//    Description: "pog",
-	//  },
-	//}
 }
 
 func (c *PingCommand) IsDmCapable() bool {
 	return true
 }
 
-func (c *PingCommand) Run(ctx ken.Context) (err error) {
-	//val := ctx.Options().GetByName("pog").BoolValue()
-	//
-	//msg := "not poggers"
-	//if val {
-	//	msg = "poggers"
-	//}
-	//
-	//err = ctx.Respond(&discordgo.InteractionResponse{
-	//	Type: discordgo.InteractionResponseChannelMessageWithSource,
-	//	Data: &discordgo.InteractionResponseData{
-	//		Content: msg,
-	//	},
-	//})
-	//return
+func (c *PingCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbed, err error) {
+	emb = &discordgo.MessageEmbed{
+		Color:       0x00ff00,
+		Description: c.Description(),
+	}
+	return
+}
 
+func (c *PingCommand) Run(ctx ken.Context) (err error) {
 	err = ctx.Respond(&discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{

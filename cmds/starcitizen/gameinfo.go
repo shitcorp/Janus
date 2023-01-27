@@ -7,29 +7,18 @@ import (
 	scapiWebsite "github.com/shitcorp/janus/scapi/website"
 	"github.com/shitcorp/janus/utils"
 	"github.com/zekrotja/ken"
+	"github.com/zekrotja/ken/middlewares/cmdhelp"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 	"time"
 )
 
-//func (h *Handler) cmdStats(ctx context.Context, data cmdroute.CommandData) *api.InteractionResponseData {
-//
-//	_, stats, err := h.api.Website.Stats()
-//	if err != nil {
-//		log.Error(err)
-//	}
-//
-//	return &api.InteractionResponseData{
-//		Content:         option.NewNullableString(stats.Data.CurrentLive),
-//		AllowedMentions: &api.AllowedMentions{}, // don't mention anyone
-//	}
-//}
-
 type GameInfoCommand struct{}
 
 var (
-	_ ken.SlashCommand = (*GameInfoCommand)(nil)
-	_ ken.DmCapable    = (*GameInfoCommand)(nil)
+	_ ken.SlashCommand     = (*GameInfoCommand)(nil)
+	_ ken.DmCapable        = (*GameInfoCommand)(nil)
+	_ cmdhelp.HelpProvider = (*GameInfoCommand)(nil)
 )
 
 func (c *GameInfoCommand) Name() string {
@@ -54,6 +43,14 @@ func (c *GameInfoCommand) Options() []*discordgo.ApplicationCommandOption {
 
 func (c *GameInfoCommand) IsDmCapable() bool {
 	return true
+}
+
+func (c *GameInfoCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbed, err error) {
+	emb = &discordgo.MessageEmbed{
+		Color:       0x00ff00,
+		Description: c.Description(),
+	}
+	return
 }
 
 func (c *GameInfoCommand) Guild() string {
