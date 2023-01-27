@@ -5,9 +5,9 @@ import (
 	"github.com/shitcorp/janus/cmds"
 	"github.com/shitcorp/janus/utils"
 	log "github.com/sirupsen/logrus"
+	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
-	"github.com/zekrotja/ken/store"
 	"os"
 	"os/signal"
 	"syscall"
@@ -34,13 +34,21 @@ func main() {
 	}
 	defer session.Close()
 
+	//_, err = dgrs.New(dgrs.Options{
+	//  DiscordSession: session,
+	//  RedisClient:    utils.Redis,
+	//  FetchAndStore:  true,
+	//})
+
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 	})
 
 	// setup ken
 	k, err := ken.New(session, ken.Options{
-		CommandStore: store.NewDefault(),
+		//CommandStore: store.NewDefault(),
+		// use redis to cache cmd info
+		CommandStore: rediscmdstore.New(utils.Redis),
 	})
 	if err != nil {
 		log.Fatalln(err)

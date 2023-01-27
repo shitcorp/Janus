@@ -8,9 +8,10 @@ import (
 var Config = LoadConfig(".")
 
 type ConfigOptions struct {
-	AppEnv     string `mapstructure:"APP_ENV"`
-	Token      string `mapstructure:"TOKEN"`
-	ScApiToken string `mapstructure:"SCAPI_TOKEN"`
+	AppEnv       string `mapstructure:"APP_ENV"`
+	Token        string `mapstructure:"TOKEN"`
+	ScApiToken   string `mapstructure:"SCAPI_TOKEN"`
+	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
 
 	// only if using in http mode
 	WebhookAddress string `mapstructure:"WEBHOOK_ADDR"`
@@ -43,6 +44,6 @@ func LoadConfig(path string) (config ConfigOptions) {
 		log.Fatalln(err)
 	}
 
-	log.Info("Loaded config")
+	log.Debug("Loaded config")
 	return
 }
