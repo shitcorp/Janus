@@ -78,7 +78,7 @@ func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 
 	player := new(scapiWebsite.UserData)
 	err = utils.Cache.Once(&cache.Item{
-		Key:   fmt.Sprintf("player:%s", handle),
+		Key:   fmt.Sprintf("api:player:%s", handle),
 		Value: player, // destination
 		TTL:   time.Hour * 24,
 		Do: func(*cache.Item) (interface{}, error) {

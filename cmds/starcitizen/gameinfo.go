@@ -63,7 +63,7 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 
 	stats := new(scapiWebsite.StatsData)
 	err = utils.Cache.Once(&cache.Item{
-		Key:   "gameinfo",
+		Key:   "api:gameinfo",
 		Value: stats, // destination
 		TTL:   time.Hour * 24,
 		Do: func(*cache.Item) (interface{}, error) {

@@ -78,7 +78,7 @@ func (c *OrgCommand) Run(ctx ken.Context) (err error) {
 
 	org := new(scapiWebsite.OrgData)
 	err = utils.Cache.Once(&cache.Item{
-		Key:   fmt.Sprintf("organization:%s", sid),
+		Key:   fmt.Sprintf("api:organization:%s", sid),
 		Value: org, // destination
 		TTL:   time.Hour * 24,
 		Do: func(*cache.Item) (interface{}, error) {
