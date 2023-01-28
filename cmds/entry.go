@@ -1,12 +1,17 @@
 package cmds
 
 import (
-	"github.com/shitcorp/janus/cmds/starcitizen"
-	"github.com/shitcorp/janus/cmds/system"
+	starcitizenCmds "github.com/shitcorp/janus/cmds/starcitizen"
+	systemcmds "github.com/shitcorp/janus/cmds/system"
 	"github.com/zekrotja/ken"
 )
 
 var Commands = []ken.Command{
-	new(systemcmds.PingCommand),
+	// star citizen
 	new(starcitizenCmds.GameInfoCommand),
+
+	// system
+	new(systemcmds.PingCommand),
+	new(systemcmds.SupportCommand),
+	new(systemcmds.VoteCommand),
 }

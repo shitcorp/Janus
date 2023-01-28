@@ -85,6 +85,7 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 				{
 					Title:       "Game Info",
 					Description: "General information about Star Citizen",
+					Timestamp:   time.Now().Format(time.RFC3339),
 					Fields: []*discordgo.MessageEmbedField{
 						{
 							Name:   "Live",

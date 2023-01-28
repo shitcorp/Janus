@@ -1,6 +1,8 @@
 package systemcmds
 
 import (
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/rotisserie/eris"
 	"github.com/zekrotja/ken"
@@ -49,7 +51,12 @@ func (c *PingCommand) Run(ctx ken.Context) (err error) {
 	err = ctx.Respond(&discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
-			Content: "pong",
+			Embeds: []*discordgo.MessageEmbed{
+				{
+					Title:     "pong!",
+					Timestamp: time.Now().Format(time.RFC3339),
+				},
+			},
 		},
 	})
 	err = eris.Wrap(err, "Ping cmd response")
