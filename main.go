@@ -120,6 +120,11 @@ func main() {
 				return
 			}
 
+			if eris.Is(err, eris.New("SC API Error: no data")) {
+				ctx.FollowUpError("Couldn't find one under that name", "").Send()
+				return
+			}
+
 			ctx.FollowUpError("An error has occurred in Janus, if this continues, please contact Janus's developers.", "").Send()
 			log.WithError(err).Error("error in cmd")
 			sentry.CaptureException(err)

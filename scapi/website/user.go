@@ -3,6 +3,7 @@ package scapiWebsite
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/rotisserie/eris"
 	scapiUtils "github.com/shitcorp/janus/scapi/utils"
@@ -45,6 +46,11 @@ type UserDataProfilePage struct {
 func (w *Website) User(handle string) (*http.Response, *UserResponse, error) {
 	user := new(UserResponse)
 	res, err := w.sling.Path("auto/").Get(fmt.Sprintf("user/%s", handle)).ReceiveSuccess(user)
+
+	var noUser UserData
+	if reflect.DeepEqual(user.Data, noUser) && user.Success != 0 {
+		err = eris.New("SC API Error: no data")
+	}
 
 	return res, user, eris.Wrap(err, "Star Citizen API stats endpoint")
 }

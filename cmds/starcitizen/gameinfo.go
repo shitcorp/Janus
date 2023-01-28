@@ -1,7 +1,6 @@
 package starcitizenCmds
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -70,7 +69,7 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 		Do: func(*cache.Item) (interface{}, error) {
 			_, res, err := utils.Api.Website.Stats()
 			if res.Success == 0 {
-				err = eris.New(fmt.Sprintf("SC API Error: %s", res.Message))
+				return nil, err
 			}
 			return res.Data, err
 		},

@@ -49,5 +49,10 @@ func (w *Website) Org(sid string) (*http.Response, *OrgResponse, error) {
 	org := new(OrgResponse)
 	res, err := w.sling.Path("auto/").Get(fmt.Sprintf("organization/%s", sid)).ReceiveSuccess(org)
 
+	var noOrg OrgData
+	if org.Data == noOrg && org.Success != 0 {
+		err = eris.New("SC API Error: no data")
+	}
+
 	return res, org, eris.Wrap(err, "Star Citizen API stats endpoint")
 }

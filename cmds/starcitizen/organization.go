@@ -2,6 +2,7 @@ package starcitizenCmds
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -73,7 +74,7 @@ func (c *OrgCommand) Guild() string {
 func (c *OrgCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()
 
-	sid := ctx.Options().GetByName("sid").StringValue()
+	sid := strings.ToUpper(ctx.Options().GetByName("sid").StringValue())
 
 	org := new(scapiWebsite.OrgData)
 	err = utils.Cache.Once(&cache.Item{
@@ -83,8 +84,9 @@ func (c *OrgCommand) Run(ctx ken.Context) (err error) {
 		Do: func(*cache.Item) (interface{}, error) {
 			_, res, err := utils.Api.Website.Org(sid)
 			if res.Success == 0 {
-				err = eris.New(fmt.Sprintf("SC API Error: %s", res.Message))
+				return nil, err
 			}
+
 			return res.Data, err
 		},
 	})

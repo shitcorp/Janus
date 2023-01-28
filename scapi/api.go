@@ -2,8 +2,9 @@ package scapi
 
 import (
 	"fmt"
+
 	"github.com/dghubble/sling"
-	"github.com/shitcorp/janus/scapi/website"
+	scapiWebsite "github.com/shitcorp/janus/scapi/website"
 )
 
 type Api struct {
