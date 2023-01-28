@@ -6,14 +6,22 @@ import (
 	"syscall"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/getsentry/sentry-go"
 	"github.com/rotisserie/eris"
 	"github.com/shitcorp/janus/cmds"
 	"github.com/shitcorp/janus/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
 	"github.com/zekrotja/ken"
-	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
+
+// ldflags
+// app version #
+// OR commit sha
+var release = "dev"
+
+// time of build
+var buildTime = "dev"
 
 func init() {
 	//	// Log as JSON instead of the default ASCII formatter.
@@ -30,9 +38,32 @@ func init() {
 func main() {
 	log.Info("Starting Janus")
 
+	// sentry options
+	sentryOptions := sentry.ClientOptions{
+		Release: release,
+
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+	}
+	// if we specified the sentry DSN
+	if utils.Config.SentryDSN != "" {
+		sentryOptions.Dsn = utils.Config.SentryDSN
+	}
+	// init sentry
+	err := sentry.Init(sentryOptions)
+	if err != nil {
+		log.WithError(err).Fatal("sentry init")
+	}
+	// still allow reports to be sent if a panic happens
+	defer sentry.Recover()
+
 	session, err := discordgo.New("Bot " + utils.Config.Token)
 	if err != nil {
-		log.WithError(eris.Wrap(err, "discordgo threw an error")).Fatal("discordgo")
+		err = eris.Wrap(err, "discordgo threw an error")
+		log.WithError(err).Fatal("discordgo")
+		sentry.CaptureException(err)
 	}
 	defer session.Close()
 
@@ -44,6 +75,12 @@ func main() {
 
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
+
+		sentry.AddBreadcrumb(&sentry.Breadcrumb{
+			Category: "discordgo",
+			Message:  "bot is ready",
+			Level:    sentry.LevelInfo,
+		})
 
 		// deletes all cmds
 		//cmds, err := session.ApplicationCommands(r.Application.ID, "492075852071174144")
@@ -61,6 +98,26 @@ func main() {
 		//CommandStore: store.NewDefault(),
 		// use redis to cache cmd info
 		CommandStore: rediscmdstore.New(utils.Redis),
+		OnSystemError: func(context string, err error, args ...interface{}) {
+			err = eris.Wrap(err, "error in ken")
+			log.WithFields(log.Fields{
+				"ctx":  context,
+				"args": args,
+			}).WithError(err).Error("ken")
+			sentry.CaptureException(err)
+		},
+		OnCommandError: func(err error, ctx *ken.Ctx) {
+			ctx.Defer()
+
+			if eris.Is(err, ken.ErrNotDMCapable) {
+				ctx.FollowUpError("This command cannot be used in dms", "").Send()
+				return
+			}
+
+			ctx.FollowUpError("An error has occurred in Janus, if this continues, please contact Janus's developers.", "").Send()
+			log.WithError(err).Error("error in cmd")
+			sentry.CaptureException(err)
+		},
 	})
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
@@ -72,10 +129,10 @@ func main() {
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error registering cmds with ken")).Fatal("ken")
 	}
-	err = k.RegisterMiddlewares(cmdhelp.New())
-	if err != nil {
-		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
-	}
+	// err = k.RegisterMiddlewares(cmdhelp.New())
+	// if err != nil {
+	// 	log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
+	// }
 
 	// login
 	err = session.Open()

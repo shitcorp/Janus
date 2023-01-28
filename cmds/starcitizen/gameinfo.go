@@ -39,13 +39,7 @@ func (c *GameInfoCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *GameInfoCommand) Options() []*discordgo.ApplicationCommandOption {
-	return []*discordgo.ApplicationCommandOption{
-		{
-			Type:        discordgo.ApplicationCommandOptionSubCommand,
-			Name:        "help",
-			Description: "Show help",
-		},
-	}
+	return []*discordgo.ApplicationCommandOption{}
 }
 
 func (c *GameInfoCommand) IsDmCapable() bool {
@@ -79,7 +73,6 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 	})
 	if err != nil {
 		err = eris.Wrap(err, "Error getting cached stats obj")
-		_ = ctx.Respond(utils.GeneralErrorResponse)
 		return
 	}
 

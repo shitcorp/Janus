@@ -13,6 +13,7 @@ type ConfigOptions struct {
 	Token        string `mapstructure:"TOKEN"`
 	ScApiToken   string `mapstructure:"SCAPI_TOKEN"`
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
+	SentryDSN    string `mapstructure:"SENTRY_DSN"`
 
 	// only if using in http mode
 	WebhookAddress string `mapstructure:"WEBHOOK_ADDR"`
@@ -25,6 +26,7 @@ type ConfigOptions struct {
 // LoadConfig reads configuration from file or environment variables.
 func LoadConfig(path string) (config ConfigOptions) {
 	// define defaults
+	viper.SetDefault("SENTRY_DSN", "")
 
 	// Read file path
 	viper.AddConfigPath(path)
