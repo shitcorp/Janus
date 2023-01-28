@@ -74,7 +74,7 @@ func (c *PlayerCommand) Guild() string {
 func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()
 
-	handle := ctx.Options().GetByName("handle").StringValue()
+	handle := strings.ToLower(ctx.Options().GetByName("handle").StringValue())
 
 	player := new(scapiWebsite.UserData)
 	err = utils.Cache.Once(&cache.Item{
