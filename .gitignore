@@ -25,3 +25,6 @@ go.work
 
 # ignore katana artifact
 .commandCache.json
+
+# jetbrains
+.idea

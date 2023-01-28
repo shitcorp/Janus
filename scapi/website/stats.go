@@ -1,8 +1,10 @@
 package scapiWebsite
 
 import (
-	scapiUtils "github.com/shitcorp/janus/scapi/utils"
 	"net/http"
+
+	"github.com/rotisserie/eris"
+	scapiUtils "github.com/shitcorp/janus/scapi/utils"
 )
 
 type StatsResponse struct {
@@ -23,5 +25,5 @@ func (w *Website) Stats() (*http.Response, *StatsResponse, error) {
 	stats := new(StatsResponse)
 	res, err := w.sling.Path("auto/").Get("stats").ReceiveSuccess(stats)
 
-	return res, stats, err
+	return res, stats, eris.Wrap(err, "Star Citizen API stats endpoint")
 }

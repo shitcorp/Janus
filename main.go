@@ -1,16 +1,18 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/bwmarrin/discordgo"
+	"github.com/rotisserie/eris"
 	"github.com/shitcorp/janus/cmds"
 	"github.com/shitcorp/janus/utils"
 	log "github.com/sirupsen/logrus"
 	"github.com/zekroTJA/shinpuru/pkg/rediscmdstore"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func init() {
@@ -30,14 +32,14 @@ func main() {
 
 	session, err := discordgo.New("Bot " + utils.Config.Token)
 	if err != nil {
-		panic(err)
+		log.WithError(eris.Wrap(err, "discordgo threw an error")).Fatal("discordgo")
 	}
 	defer session.Close()
 
 	//_, err = dgrs.New(dgrs.Options{
-	//  DiscordSession: session,
-	//  RedisClient:    utils.Redis,
-	//  FetchAndStore:  true,
+	//	DiscordSession: session,
+	//	RedisClient:    utils.Redis,
+	//	FetchAndStore:  true,
 	//})
 
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
@@ -61,24 +63,24 @@ func main() {
 		CommandStore: rediscmdstore.New(utils.Redis),
 	})
 	if err != nil {
-		log.Fatalln(err)
+		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
 	}
 	defer k.Unregister()
 
 	// register cmds
 	err = k.RegisterCommands(cmds.Commands...)
 	if err != nil {
-		log.Fatalln(err)
+		log.WithError(eris.Wrap(err, "Error registering cmds with ken")).Fatal("ken")
 	}
 	err = k.RegisterMiddlewares(cmdhelp.New())
 	if err != nil {
-		log.Fatalln(err)
+		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
 	}
 
 	// login
 	err = session.Open()
 	if err != nil {
-		log.Fatalln(err)
+		log.WithError(eris.Wrap(err, "discordgo threw an error while connecting to discord")).Fatal("discordgo")
 	}
 
 	// handle stop

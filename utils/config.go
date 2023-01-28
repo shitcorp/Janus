@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/rotisserie/eris"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -35,13 +36,15 @@ func LoadConfig(path string) (config ConfigOptions) {
 	// read the config file
 	err := viper.ReadInConfig()
 	if err != nil {
+		log.Debug("Didn't load config from a file")
+		// err = eris.Wrap(err, "failed to read viper config")
 		return
 	}
 
 	// load config into object
 	err = viper.Unmarshal(&config)
 	if err != nil {
-		log.Fatalln(err)
+		log.WithError(eris.Wrap(err, "failed to load the config into an object")).Fatal("config")
 	}
 
 	log.Debug("Loaded config")

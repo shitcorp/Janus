@@ -1,16 +1,17 @@
 package starcitizenCmds
 
 import (
-	"fmt"
+	"time"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-redis/cache/v8"
+	"github.com/rotisserie/eris"
 	scapiWebsite "github.com/shitcorp/janus/scapi/website"
 	"github.com/shitcorp/janus/utils"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
-	"time"
 )
 
 type GameInfoCommand struct{}
@@ -77,6 +78,7 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 		},
 	})
 	if err != nil {
+		err = eris.Wrap(err, "Error getting cached stats obj")
 		_ = ctx.Respond(utils.GeneralErrorResponse)
 		return
 	}
@@ -124,7 +126,6 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 					},
 				},
 			},
-			Content: fmt.Sprintf("current live: %s", stats.CurrentLive),
 		},
 	})
 	return
