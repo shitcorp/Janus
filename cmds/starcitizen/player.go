@@ -83,6 +83,9 @@ func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 		TTL:   time.Hour * 24,
 		Do: func(*cache.Item) (interface{}, error) {
 			_, res, err := utils.Api.Website.User(handle)
+			if res.Success == 0 {
+				err = eris.New(fmt.Sprintf("SC API Error: %s", res.Message))
+			}
 			return res.Data, err
 		},
 	})
