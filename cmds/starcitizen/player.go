@@ -135,13 +135,14 @@ func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 	if player.Organization != noOrg {
 		fields = append(fields, &discordgo.MessageEmbedField{
 			Name:   "Main Organization",
-			Value:  fmt.Sprintf("**Name**: %s\n**Rank**: %s", player.Organization.Name, player.Organization.Rank),
+			Value:  fmt.Sprintf("**Name**: %s\n**SID**: %s\n**Rank**: %s", player.Organization.Name, player.Organization.Sid, player.Organization.Rank),
 			Inline: true,
 		})
 	}
 
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
-		Title: player.Profile.Display,
+		Title:     player.Profile.Display,
+		Timestamp: time.Now().Format(time.RFC3339),
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: player.Profile.Image,
 		},

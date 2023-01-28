@@ -10,6 +10,7 @@ var Commands = []ken.Command{
 	// star citizen
 	new(starcitizenCmds.GameInfoCommand),
 	new(starcitizenCmds.PlayerCommand),
+	new(starcitizenCmds.OrgCommand),
 
 	// system
 	new(systemcmds.PingCommand),
