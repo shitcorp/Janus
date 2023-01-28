@@ -9,6 +9,7 @@ import (
 var Commands = []ken.Command{
 	// star citizen
 	new(starcitizenCmds.GameInfoCommand),
+	new(starcitizenCmds.PlayerCommand),
 
 	// system
 	new(systemcmds.PingCommand),

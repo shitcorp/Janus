@@ -76,6 +76,8 @@ func main() {
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 
+		s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
+
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
 			Category: "discordgo",
 			Message:  "bot is ready",
@@ -98,6 +100,10 @@ func main() {
 		//CommandStore: store.NewDefault(),
 		// use redis to cache cmd info
 		CommandStore: rediscmdstore.New(utils.Redis),
+		EmbedColors: ken.EmbedColors{
+			Default: 0x228dcc,
+			Error:   0xF44336,
+		},
 		OnSystemError: func(context string, err error, args ...interface{}) {
 			err = eris.Wrap(err, "error in ken")
 			log.WithFields(log.Fields{
