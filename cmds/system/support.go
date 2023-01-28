@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/rotisserie/eris"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
@@ -53,18 +54,11 @@ func (c *SupportCommand) Guild() string {
 }
 
 func (c *SupportCommand) Run(ctx ken.Context) (err error) {
-
-	err = ctx.Respond(&discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       "Support",
-					Description: "You can get support for Janus via our [Discord server](https://discord.gg/RuEdX5T), or on our [Github](https://github.com/shitcorp/Janus/issues).",
-					Timestamp:   time.Now().Format(time.RFC3339),
-				},
-			},
-		},
-	})
+	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Title:       "Support",
+		Description: "You can get support for Janus via our [Discord server](https://discord.gg/RuEdX5T), or on our [Github](https://github.com/shitcorp/Janus/issues).",
+		Timestamp:   time.Now().Format(time.RFC3339),
+	}).Send().Error
+	err = eris.Wrap(err, "Support cmd response")
 	return
 }

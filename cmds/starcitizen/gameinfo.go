@@ -78,49 +78,43 @@ func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 
 	p := message.NewPrinter(language.English)
 
-	err = ctx.Respond(&discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       "Game Info",
-					Description: "General information about Star Citizen",
-					Timestamp:   time.Now().Format(time.RFC3339),
-					Fields: []*discordgo.MessageEmbedField{
-						{
-							Name:   "Live",
-							Value:  stats.CurrentLive,
-							Inline: true,
-						},
-						{
-							Name:   "PTU",
-							Value:  stats.CurrentPtu,
-							Inline: true,
-						},
-						{
-							Name:   "Evocati",
-							Value:  stats.CurrentEtf,
-							Inline: true,
-						},
-						{
-							Name:   "Citizens",
-							Value:  p.Sprintf("%d", stats.Fans),
-							Inline: true,
-						},
-						{
-							Name:   "Fleet",
-							Value:  p.Sprintf("%d", stats.Fleet),
-							Inline: true,
-						},
-						{
-							Name:   "Funds",
-							Value:  p.Sprintf("%.2f", stats.Funds),
-							Inline: true,
-						},
-					},
-				},
+	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Title:       "Game Info",
+		Description: "General information about Star Citizen",
+		Timestamp:   time.Now().Format(time.RFC3339),
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Live",
+				Value:  stats.CurrentLive,
+				Inline: true,
+			},
+			{
+				Name:   "PTU",
+				Value:  stats.CurrentPtu,
+				Inline: true,
+			},
+			{
+				Name:   "Evocati",
+				Value:  stats.CurrentEtf,
+				Inline: true,
+			},
+			{
+				Name:   "Citizens",
+				Value:  p.Sprintf("%d", stats.Fans),
+				Inline: true,
+			},
+			{
+				Name:   "Fleet",
+				Value:  p.Sprintf("%d", stats.Fleet),
+				Inline: true,
+			},
+			{
+				Name:   "Funds",
+				Value:  p.Sprintf("%.2f", stats.Funds),
+				Inline: true,
 			},
 		},
-	})
+	}).Send().Error
+	err = eris.Wrap(err, "Gameinfo cmd response")
 	return
 }

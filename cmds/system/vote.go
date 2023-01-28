@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/rotisserie/eris"
 	"github.com/zekrotja/ken"
 	"github.com/zekrotja/ken/middlewares/cmdhelp"
 )
@@ -53,19 +54,11 @@ func (c *VoteCommand) Guild() string {
 }
 
 func (c *VoteCommand) Run(ctx ken.Context) (err error) {
-	// ctx.GetSession().
-
-	err = ctx.Respond(&discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:       "Vote",
-					Description: "You can help support Janus by [voting on Top.gg](https://top.gg/bot/776100457260384266/vote), and leaving us a [review](https://top.gg/bot/776100457260384266#reviews).",
-					Timestamp:   time.Now().Format(time.RFC3339),
-				},
-			},
-		},
-	})
+	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Title:       "Vote",
+		Description: "You can help support Janus by [voting on Top.gg](https://top.gg/bot/776100457260384266/vote), and leaving us a [review](https://top.gg/bot/776100457260384266#reviews).",
+		Timestamp:   time.Now().Format(time.RFC3339),
+	}).Send().Error
+	err = eris.Wrap(err, "Vote cmd response")
 	return
 }

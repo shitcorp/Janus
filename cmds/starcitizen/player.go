@@ -145,5 +145,6 @@ func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 		URL:    player.Profile.Page.Url,
 		Fields: fields,
 	}).Send().Error
+	err = eris.Wrap(err, "Player cmd response")
 	return
 }

@@ -48,17 +48,10 @@ func (c *PingCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmb
 }
 
 func (c *PingCommand) Run(ctx ken.Context) (err error) {
-	err = ctx.Respond(&discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Embeds: []*discordgo.MessageEmbed{
-				{
-					Title:     "pong!",
-					Timestamp: time.Now().Format(time.RFC3339),
-				},
-			},
-		},
-	})
+	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
+		Title:     "pong!",
+		Timestamp: time.Now().Format(time.RFC3339),
+	}).Send().Error
 	err = eris.Wrap(err, "Ping cmd response")
 	return
 }
