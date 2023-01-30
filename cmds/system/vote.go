@@ -49,9 +49,9 @@ func (c *VoteCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmb
 	return
 }
 
-func (c *VoteCommand) Guild() string {
-	return "492075852071174144"
-}
+// func (c *VoteCommand) Guild() string {
+// 	return "492075852071174144"
+// }
 
 func (c *VoteCommand) Run(ctx ken.Context) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{

@@ -67,9 +67,9 @@ func (c *ShipCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmb
 	return
 }
 
-func (c *ShipCommand) Guild() string {
-	return "492075852071174144"
-}
+// func (c *ShipCommand) Guild() string {
+// 	return "492075852071174144"
+// }
 
 func (c *ShipCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()

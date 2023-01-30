@@ -54,9 +54,9 @@ func (c *GameInfoCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.Messag
 	return
 }
 
-func (c *GameInfoCommand) Guild() string {
-	return "492075852071174144"
-}
+// func (c *GameInfoCommand) Guild() string {
+// 	return "492075852071174144"
+// }
 
 func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()

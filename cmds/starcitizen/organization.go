@@ -67,9 +67,9 @@ func (c *OrgCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbe
 	return
 }
 
-func (c *OrgCommand) Guild() string {
-	return "492075852071174144"
-}
+// func (c *OrgCommand) Guild() string {
+// 	return "492075852071174144"
+// }
 
 func (c *OrgCommand) Run(ctx ken.Context) (err error) {
 	ctx.Defer()

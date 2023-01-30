@@ -49,9 +49,9 @@ func (c *SupportCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.Message
 	return
 }
 
-func (c *SupportCommand) Guild() string {
-	return "492075852071174144"
-}
+// func (c *SupportCommand) Guild() string {
+// 	return "492075852071174144"
+// }
 
 func (c *SupportCommand) Run(ctx ken.Context) (err error) {
 	err = ctx.FollowUpEmbed(&discordgo.MessageEmbed{
