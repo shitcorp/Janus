@@ -9,4 +9,6 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -v -o bot .
 
+ENV APP_ENV production
+
 CMD ["/app/bot"]
