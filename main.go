@@ -4,9 +4,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"github.com/botblock/golist"
 	"github.com/bwmarrin/discordgo"
 	"github.com/getsentry/sentry-go"
+	"github.com/go-co-op/gocron"
 	"github.com/rotisserie/eris"
 	"github.com/shitcorp/janus/cmds"
 	"github.com/shitcorp/janus/utils"
@@ -59,6 +62,11 @@ func main() {
 	// still allow reports to be sent if a panic happens
 	defer sentry.Recover()
 
+	scheduler := gocron.NewScheduler(time.UTC)
+	botBlock := golist.NewClient()
+
+	botBlock.AddToken("top.gg", utils.Config.TopGGToken)
+
 	session, err := discordgo.New("Bot " + utils.Config.Token)
 	if err != nil {
 		err = eris.Wrap(err, "discordgo threw an error")
@@ -73,6 +81,22 @@ func main() {
 	//	FetchAndStore:  true,
 	//})
 
+	_, err = scheduler.Every(1).Hour().Do(func() error {
+		if utils.Config.AppEnv != "production" {
+			return nil
+		}
+
+		_, err := botBlock.PostStats(session.State.User.ID, golist.Stats{
+			ServerCount: int64(len(session.State.Guilds)),
+			ShardID:     int64(session.ShardID),
+			ShardCount:  int64(session.ShardCount),
+		})
+		return eris.Wrap(err, "Error with botblock")
+	})
+	if err != nil {
+		log.WithError(eris.Wrap(err, "Error in scheduler")).Error()
+	}
+
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 
@@ -83,6 +107,8 @@ func main() {
 			Message:  "bot is ready",
 			Level:    sentry.LevelInfo,
 		})
+
+		scheduler.StartAsync()
 
 		// deletes all cmds
 		//cmds, err := session.ApplicationCommands(r.Application.ID, "492075852071174144")

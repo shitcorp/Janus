@@ -14,6 +14,7 @@ type ConfigOptions struct {
 	ScApiToken   string `mapstructure:"SCAPI_TOKEN"`
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
 	SentryDSN    string `mapstructure:"SENTRY_DSN"`
+	TopGGToken   string `mapstructure:"TOPGG_TOKEN"`
 
 	// only if using in http mode
 	WebhookAddress string `mapstructure:"WEBHOOK_ADDR"`
