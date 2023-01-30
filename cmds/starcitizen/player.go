@@ -121,7 +121,8 @@ func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
 		{
 			Name: "Enlisted",
 			// "2016-08-19T00:00:00.000000"
-			Value:  enlisted.Format(time.RFC1123),
+			// Value:  enlisted.Format(time.RFC1123),
+			Value:  enlisted.Format("Mon, 02 Jan 2006"),
 			Inline: true,
 		},
 		{

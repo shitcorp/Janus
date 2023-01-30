@@ -11,6 +11,7 @@ var Commands = []ken.Command{
 	new(starcitizenCmds.GameInfoCommand),
 	new(starcitizenCmds.PlayerCommand),
 	new(starcitizenCmds.OrgCommand),
+	// new(starcitizenCmds.ShipCommand),
 
 	// system
 	new(systemcmds.PingCommand),
