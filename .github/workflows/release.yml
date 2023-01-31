@@ -75,3 +75,4 @@ jobs:
           # SENTRY_URL: https://sentry.io/
         with:
           environment: production
+          version: ${{ github.event.release.tag_name }}
