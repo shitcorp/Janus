@@ -59,7 +59,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: Release=${{ github.sha }}
+          build-args: Release=${{ github.event.release.tag_name }}
 
   sentry:
     name: Sentry Integration
