@@ -21,10 +21,10 @@ import (
 // ldflags
 // app version #
 // OR commit sha
-var release = "dev"
+var Release = "dev"
 
 // time of build
-var buildTime = "dev"
+var BuildTime = "dev"
 
 func init() {
 	//	// Log as JSON instead of the default ASCII formatter.
@@ -43,7 +43,7 @@ func main() {
 
 	// sentry options
 	sentryOptions := sentry.ClientOptions{
-		Release: release,
+		Release: Release,
 
 		// Set TracesSampleRate to 1.0 to capture 100%
 		// of transactions for performance monitoring.
