@@ -6,9 +6,9 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
+ENV APP_ENV production
+
 COPY . .
 RUN go build -v -o bot .
-
-ENV APP_ENV production
 
 CMD ["/app/bot"]
