@@ -22,12 +22,16 @@ type ConfigOptions struct {
 
 	// when appenv != production
 	TestGuildId string `mapstructure:"TEST_GUILD_ID"`
+
+	// debug  flag
+	Debug bool `mapstructure:"DEBUG"`
 }
 
 // LoadConfig reads configuration from file or environment variables.
 func LoadConfig(path string) (config ConfigOptions) {
 	// define defaults
 	viper.SetDefault("SENTRY_DSN", "")
+	viper.SetDefault("DEBUG", false)
 
 	// Read file path
 	viper.AddConfigPath(path)

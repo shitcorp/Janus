@@ -36,6 +36,10 @@ func init() {
 
 	//	// Only log the warning severity or above.
 	//	log.SetLevel(log.WarnLevel)
+
+	if utils.Config.Debug {
+		log.SetLevel(log.DebugLevel)
+	}
 }
 
 func main() {
