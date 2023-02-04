@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"os"
+
 	"github.com/rotisserie/eris"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -27,6 +29,22 @@ type ConfigOptions struct {
 	Debug bool `mapstructure:"DEBUG"`
 }
 
+func init() {
+	//	// Log as JSON instead of the default ASCII formatter.
+	//	log.SetFormatter(&log.JSONFormatter{})
+
+	// Output to stdout instead of the default stderr
+	// Can be any io.Writer, see below for File example
+	log.SetOutput(os.Stdout)
+
+	//	// Only log the warning severity or above.
+	//	log.SetLevel(log.WarnLevel)
+
+	// if utils.Config.Debug {
+	// 	log.SetLevel(log.DebugLevel)
+	// }
+}
+
 // LoadConfig reads configuration from file or environment variables.
 func LoadConfig(path string) (config ConfigOptions) {
 	// define defaults
@@ -36,6 +54,9 @@ func LoadConfig(path string) (config ConfigOptions) {
 	// Read file path
 	viper.AddConfigPath(path)
 	viper.SetConfigFile(".env")
+	viper.SetConfigType("env")
+
+	viper.SetEnvPrefix("")
 
 	// pull in env vars
 	viper.AutomaticEnv()
@@ -54,6 +75,11 @@ func LoadConfig(path string) (config ConfigOptions) {
 		log.WithError(eris.Wrap(err, "failed to load the config into an object")).Fatal("config")
 	}
 
-	log.Debug("Loaded config")
+	if config.Debug {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	// log.WithField("Config", config).Debug("Loaded config")
+	log.Debugf("Loaded config:\n%+v\n", config)
 	return
 }
