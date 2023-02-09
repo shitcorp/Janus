@@ -23,5 +23,7 @@ COPY --from=BUILD /app/bot /app/bot
 USER nonroot:nonroot
 
 ENV APP_ENV production
+# because of enviper's dumb
+ENV JANUS_APP_ENV production
 
 CMD ["/app/bot"]
