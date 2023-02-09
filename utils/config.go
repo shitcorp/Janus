@@ -3,6 +3,8 @@ package utils
 import (
 	"os"
 
+	"github.com/getsentry/sentry-go"
+	"github.com/iamolegga/enviper"
 	"github.com/rotisserie/eris"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -47,30 +49,61 @@ func init() {
 
 // LoadConfig reads configuration from file or environment variables.
 func LoadConfig(path string) (config ConfigOptions) {
+	// for the poor soul wondering wtf is going on in this config
+	// there is a really stupid bug in viper https://github.com/spf13/viper/issues/761
+	// and enviper is the only decent solution, but it requires some stupid shit to work
+
+	e := enviper.New(viper.New())
+
 	// define defaults
-	viper.SetDefault("SENTRY_DSN", "")
-	viper.SetDefault("DEBUG", false)
+	e.SetDefault("SENTRY_DSN", "")
+	e.SetDefault("DEBUG", false)
 
-	// Read file path
-	viper.AddConfigPath(path)
-	viper.SetConfigFile(".env")
-	viper.SetConfigType("env")
-
-	viper.SetEnvPrefix("")
+	// so all env vars start like JANUS_
+	e.SetEnvPrefix("JANUS")
 
 	// pull in env vars
-	viper.AutomaticEnv()
+	e.AutomaticEnv()
 
-	// read the config file
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Debug("Didn't load config from a file")
-		// err = eris.Wrap(err, "failed to read viper config")
-		return
+	// so we only use it in docker
+	if e.GetString("APP_ENV") == "production" {
+		log.Info("Using docker specific config")
+		sentry.AddBreadcrumb(&sentry.Breadcrumb{
+			Category: "config",
+			Message:  "Using docker specific config",
+			Level:    sentry.LevelInfo,
+		})
+
+		// hack so viper can pull env vars
+		e.AddConfigPath("/my/config/path")
+		e.SetConfigName("config")
+	} else {
+		// Because I want have a decent dev experiance
+		// so this section when "not in prod", uses env files
+
+		log.Info("Not using docker specific config")
+		sentry.AddBreadcrumb(&sentry.Breadcrumb{
+			Category: "config",
+			Message:  "Not using docker specific config",
+			Level:    sentry.LevelInfo,
+		})
+
+		// Read file path
+		e.AddConfigPath(path)
+		e.SetConfigFile(".env")
+		e.SetConfigType("env")
+
+		// read the config file
+		err := e.ReadInConfig()
+		if err != nil {
+			log.Debug("Didn't load config from a file")
+			// err = eris.Wrap(err, "failed to read viper config")
+			return
+		}
 	}
 
 	// load config into object
-	err = viper.Unmarshal(&config)
+	err := e.Unmarshal(&config)
 	if err != nil {
 		log.WithError(eris.Wrap(err, "failed to load the config into an object")).Fatal("config")
 	}
