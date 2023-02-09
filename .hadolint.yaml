@@ -1,3 +1,0 @@
-ignored:
-  # Always tag the version of an image explicitly.
-  - DL3006
