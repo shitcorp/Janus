@@ -1,4 +1,4 @@
-FROM golang:1.19 AS BUILD
+FROM golang:1.20 AS BUILD
 ARG Release=dev
 
 WORKDIR /app
