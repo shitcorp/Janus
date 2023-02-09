@@ -23,7 +23,7 @@ jobs:
       - name: Cache Docker images
         uses: ScribeMD/docker-cache@0.2.7
         with:
-          key: docker-${{ runner.os }}-${{ hashFiles(".github/workflows/*") }}
+          key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/*') }}
 
       - name: Lint Code Base
         uses: github/super-linter@v4
