@@ -147,7 +147,6 @@ func main() {
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
 	}
-	defer k.Unregister()
 
 	// register cmds
 	err = k.RegisterCommands(cmds.Commands...)
