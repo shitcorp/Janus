@@ -39,8 +39,7 @@ func (c *PlayerCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *PlayerCommand) Options() []*discordgo.ApplicationCommandOption {
-	var minLen *int
-	minLen = new(int)
+	var minLen *int = new(int)
 	*minLen = 2
 
 	return []*discordgo.ApplicationCommandOption{
@@ -72,7 +71,7 @@ func (c *PlayerCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageE
 // }
 
 func (c *PlayerCommand) Run(ctx ken.Context) (err error) {
-	ctx.Defer()
+	_ = ctx.Defer()
 
 	handle := strings.ToLower(ctx.Options().GetByName("handle").StringValue())
 

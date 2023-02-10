@@ -88,7 +88,7 @@ func main() {
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 
-		s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
+		_ = s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
 
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
 			Category: "discordgo",
@@ -127,7 +127,7 @@ func main() {
 			sentry.CaptureException(err)
 		},
 		OnCommandError: func(err error, ctx *ken.Ctx) {
-			ctx.Defer()
+			_ = ctx.Defer()
 
 			if eris.Is(err, ken.ErrNotDMCapable) {
 				ctx.FollowUpError("This command cannot be used in dms", "").Send()
@@ -147,7 +147,6 @@ func main() {
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
 	}
-	defer k.Unregister()
 
 	// register cmds
 	err = k.RegisterCommands(cmds.Commands...)
@@ -167,6 +166,6 @@ func main() {
 
 	// handle stop
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 }

@@ -39,8 +39,7 @@ func (c *OrgCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *OrgCommand) Options() []*discordgo.ApplicationCommandOption {
-	var minLen *int
-	minLen = new(int)
+	var minLen *int = new(int)
 	*minLen = 2
 
 	return []*discordgo.ApplicationCommandOption{
@@ -72,7 +71,7 @@ func (c *OrgCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbe
 // }
 
 func (c *OrgCommand) Run(ctx ken.Context) (err error) {
-	ctx.Defer()
+	_ = ctx.Defer()
 
 	sid := strings.ToUpper(ctx.Options().GetByName("sid").StringValue())
 

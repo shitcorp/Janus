@@ -39,8 +39,7 @@ func (c *ShipCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *ShipCommand) Options() []*discordgo.ApplicationCommandOption {
-	var minLen *int
-	minLen = new(int)
+	var minLen *int = new(int)
 	*minLen = 2
 
 	return []*discordgo.ApplicationCommandOption{
@@ -72,7 +71,7 @@ func (c *ShipCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmb
 // }
 
 func (c *ShipCommand) Run(ctx ken.Context) (err error) {
-	ctx.Defer()
+	_ = ctx.Defer()
 
 	name := strings.ToLower(ctx.Options().GetByName("name").StringValue())
 
