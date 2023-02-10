@@ -26,6 +26,12 @@ var Release = "dev"
 // time of build
 var BuildTime = "dev"
 
+// task scheduler
+var scheduler = gocron.NewScheduler(time.UTC)
+
+// botblock api client
+var botBlock = golist.NewClient()
+
 func main() {
 	log.Info("Starting Janus")
 
@@ -50,9 +56,7 @@ func main() {
 	// still allow reports to be sent if a panic happens
 	defer sentry.Recover()
 
-	scheduler := gocron.NewScheduler(time.UTC)
-	botBlock := golist.NewClient()
-
+	// set tog.gg token
 	botBlock.AddToken("top.gg", utils.Config.TopGGToken)
 
 	session, err := discordgo.New("Bot " + utils.Config.Token)
@@ -63,51 +67,18 @@ func main() {
 	}
 	defer session.Close()
 
+	session.AddHandler(readyHandler)
+
 	//_, err = dgrs.New(dgrs.Options{
 	//	DiscordSession: session,
 	//	RedisClient:    utils.Redis,
 	//	FetchAndStore:  true,
 	//})
 
-	_, err = scheduler.Every(1).Hour().Do(func() error {
-		if utils.Config.AppEnv != "production" {
-			return nil
-		}
-
-		_, err := botBlock.PostStats(session.State.User.ID, golist.Stats{
-			ServerCount: int64(len(session.State.Guilds)),
-			ShardID:     int64(session.ShardID),
-			ShardCount:  int64(session.ShardCount),
-		})
-		return eris.Wrap(err, "Error with botblock")
-	})
+	_, err = scheduler.Every(1).Hour().Do(postBotStats, session)
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error in scheduler")).Error()
 	}
-
-	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
-
-		_ = s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
-
-		sentry.AddBreadcrumb(&sentry.Breadcrumb{
-			Category: "discordgo",
-			Message:  "bot is ready",
-			Level:    sentry.LevelInfo,
-		})
-
-		scheduler.StartAsync()
-
-		// deletes all cmds
-		//cmds, err := session.ApplicationCommands(r.Application.ID, "492075852071174144")
-		//if err != nil {
-		//	log.Fatalln(err)
-		//}
-		//for i := range cmds {
-		//	//log.Infof("Command: %s", cmds[i].ID)
-		//	session.ApplicationCommandDelete(r.Application.ID, "492075852071174144", cmds[i].ID)
-		//}
-	})
 
 	// setup ken
 	k, err := ken.New(session, ken.Options{
@@ -118,31 +89,8 @@ func main() {
 			Default: 0x228dcc,
 			Error:   0xF44336,
 		},
-		OnSystemError: func(context string, err error, args ...interface{}) {
-			err = eris.Wrap(err, "error in ken")
-			log.WithFields(log.Fields{
-				"ctx":  context,
-				"args": args,
-			}).WithError(err).Error("ken")
-			sentry.CaptureException(err)
-		},
-		OnCommandError: func(err error, ctx *ken.Ctx) {
-			_ = ctx.Defer()
-
-			if eris.Is(err, ken.ErrNotDMCapable) {
-				ctx.FollowUpError("This command cannot be used in dms", "").Send()
-				return
-			}
-
-			if eris.Is(err, eris.New("SC API Error: no data")) {
-				ctx.FollowUpError("Couldn't find one under that name", "").Send()
-				return
-			}
-
-			ctx.FollowUpError("An error has occurred in Janus, if this continues, please contact Janus's developers.", "").Send()
-			log.WithError(err).Error("error in cmd")
-			sentry.CaptureException(err)
-		},
+		OnSystemError:  kenSystemError,
+		OnCommandError: kenCmdError,
 	})
 	if err != nil {
 		log.WithError(eris.Wrap(err, "Error setting up ken")).Fatal("ken")
