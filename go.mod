@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/zekroTJA/shinpuru v0.0.0-20230103004824-14be0875c563
 	github.com/zekrotja/ken v0.18.0
-	golang.org/x/text v0.6.0
+	golang.org/x/text v0.7.0
 )
 
 require (
