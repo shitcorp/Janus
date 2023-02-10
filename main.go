@@ -88,7 +88,7 @@ func main() {
 	session.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Infof("Janus is connected as %s#%s", r.User.Username, r.User.Discriminator)
 
-		s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
+		_ = s.UpdateStreamingStatus(0, "data from the verse", "https://www.youtube.com/watch?v=BbfsX9aFvYw")
 
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
 			Category: "discordgo",
