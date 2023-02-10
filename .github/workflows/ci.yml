@@ -11,24 +11,25 @@ on:
 
 jobs:
   lint:
-    name: Lint Code Base
+    name: lint
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
-      - name: Checkout Code
+      - name: Checkout the repo
         uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
-          fetch-depth: 0
+          go-version: "1.20"
 
-      # - name: Cache Docker images
-      #   uses: ScribeMD/docker-cache@0.2.7
-      #   with:
-      #     key: docker-${{ runner.os }}-${{ hashFiles('.github/workflows/*') }}
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          # Optional: golangci-lint command line arguments.
+          # args: --issues-exit-code=0
 
-      # - name: Lint Code Base
-      #   uses: github/super-linter@v4
-      #   env:
-      #     VALIDATE_ALL_CODEBASE: false
-      #     DEFAULT_BRANCH: master
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     VALIDATE_NATURAL_LANGUAGE: false
+          # Optional: show only new issues if it's a pull request. The default value is `false`.
+          only-new-issues: true
