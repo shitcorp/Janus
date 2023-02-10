@@ -58,6 +58,7 @@ func main() {
 
 	// set tog.gg token
 	botBlock.AddToken("top.gg", utils.Config.TopGGToken)
+	botBlock.AddToken("discordbotlist.com", utils.Config.DBotListToken)
 
 	session, err := discordgo.New("Bot " + utils.Config.Token)
 	if err != nil {
