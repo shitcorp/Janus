@@ -59,7 +59,7 @@ func (c *GameInfoCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.Messag
 // }
 
 func (c *GameInfoCommand) Run(ctx ken.Context) (err error) {
-	ctx.Defer()
+	_ = ctx.Defer()
 
 	stats := new(scapiWebsite.StatsData)
 	err = utils.Cache.Once(&cache.Item{

@@ -72,7 +72,7 @@ func (c *OrgCommand) Help(ctx ken.SubCommandContext) (emb *discordgo.MessageEmbe
 // }
 
 func (c *OrgCommand) Run(ctx ken.Context) (err error) {
-	ctx.Defer()
+	_ = ctx.Defer()
 
 	sid := strings.ToUpper(ctx.Options().GetByName("sid").StringValue())
 

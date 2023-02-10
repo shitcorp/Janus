@@ -127,7 +127,7 @@ func main() {
 			sentry.CaptureException(err)
 		},
 		OnCommandError: func(err error, ctx *ken.Ctx) {
-			ctx.Defer()
+			_ = ctx.Defer()
 
 			if eris.Is(err, ken.ErrNotDMCapable) {
 				ctx.FollowUpError("This command cannot be used in dms", "").Send()
