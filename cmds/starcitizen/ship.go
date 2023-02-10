@@ -39,8 +39,7 @@ func (c *ShipCommand) Type() discordgo.ApplicationCommandType {
 }
 
 func (c *ShipCommand) Options() []*discordgo.ApplicationCommandOption {
-	var minLen *int
-	minLen = new(int)
+	var minLen *int = new(int)
 	*minLen = 2
 
 	return []*discordgo.ApplicationCommandOption{
