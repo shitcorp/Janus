@@ -27,6 +27,8 @@ type ConfigOptions struct {
 	// when appenv != production
 	TestGuildId string `mapstructure:"TEST_GUILD_ID"`
 
+	MetricPort string `mapstructure:"METRICS_PORT"`
+
 	// debug  flag
 	Debug bool `mapstructure:"DEBUG"`
 }
@@ -58,6 +60,7 @@ func LoadConfig(path string) (config ConfigOptions) {
 	// define defaults
 	e.SetDefault("SENTRY_DSN", "")
 	e.SetDefault("DEBUG", false)
+	e.SetDefault("METRICS_PORT", "8080")
 
 	// so all env vars start like JANUS_
 	e.SetEnvPrefix("JANUS")
