@@ -59,5 +59,11 @@ func kenCmdError(err error, ctx *ken.Ctx) {
 
 	ctx.FollowUpError("An error has occurred in Janus, if this continues, please contact Janus's developers.", "").Send()
 	log.WithError(err).Error("error in cmd")
-	sentry.CaptureException(err)
+	sentry.WithScope(func(scope *sentry.Scope) {
+		// so we know the affected user count
+		scope.SetUser(sentry.User{
+			ID: ctx.User().ID,
+		})
+		sentry.CaptureException(err)
+	})
 }
