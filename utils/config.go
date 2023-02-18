@@ -84,7 +84,7 @@ func LoadConfig(path string) (config ConfigOptions) {
 		// Because I want have a decent dev experiance
 		// so this section when "not in prod", uses env files
 
-		log.Info("Not using docker specific config")
+		log.Info("Using standard config")
 		sentry.AddBreadcrumb(&sentry.Breadcrumb{
 			Category: "config",
 			Message:  "Not using docker specific config",
