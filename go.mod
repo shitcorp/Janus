@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/botblock/golist v1.0.1
-	github.com/bwmarrin/discordgo v0.27.0
+	github.com/bwmarrin/discordgo v0.27.1
 	github.com/dghubble/sling v1.4.1
 	github.com/getsentry/sentry-go v0.18.0
 	github.com/go-co-op/gocron v1.18.0
