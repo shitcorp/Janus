@@ -6,7 +6,7 @@ require (
 	github.com/botblock/golist v1.0.1
 	github.com/bwmarrin/discordgo v0.27.0
 	github.com/dghubble/sling v1.4.1
-	github.com/getsentry/sentry-go v0.18.0
+	github.com/getsentry/sentry-go v0.20.0
 	github.com/go-co-op/gocron v1.18.0
 	github.com/go-redis/cache/v8 v8.4.4
 	github.com/go-redis/redis/v8 v8.11.5
@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.15.0
 	github.com/zekroTJA/shinpuru v0.0.0-20230103004824-14be0875c563
 	github.com/zekrotja/ken v0.18.0
-	golang.org/x/text v0.7.0
+	golang.org/x/text v0.8.0
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/klauspost/compress v1.15.13 // indirect
+	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/onsi/gomega v1.25.0 // indirect
@@ -42,9 +42,9 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zekrotja/dgrs v0.5.6 // indirect
-	golang.org/x/crypto v0.4.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
