@@ -7,7 +7,7 @@ require (
 	github.com/bwmarrin/discordgo v0.27.0
 	github.com/dghubble/sling v1.4.1
 	github.com/getsentry/sentry-go v0.18.0
-	github.com/go-co-op/gocron v1.18.0
+	github.com/go-co-op/gocron v1.27.0
 	github.com/go-redis/cache/v8 v8.4.4
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/iamolegga/enviper v1.4.0
@@ -42,6 +42,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zekrotja/dgrs v0.5.6 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
