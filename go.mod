@@ -12,7 +12,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/iamolegga/enviper v1.4.0
 	github.com/rotisserie/eris v0.5.4
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.2
 	github.com/spf13/viper v1.15.0
 	github.com/zekroTJA/shinpuru v0.0.0-20230103004824-14be0875c563
 	github.com/zekrotja/ken v0.18.0
